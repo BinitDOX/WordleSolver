@@ -11,7 +11,7 @@ class WordleSolverLogic:
         self.previous_attempt = ""
         self.sorted_list_index = 0
 
-        print("SORTED+LIST = ")
+        print("SORTED_LIST = ")
         print(self.sorted_list)
 
     def greenify(self, index):
@@ -19,7 +19,7 @@ class WordleSolverLogic:
 
     def blackify(self, index):
         for i in range(self.N):
-            if self.previous_attempt[index] in self.n_sets[i]:
+            if self.result[i] != 'G' and self.previous_attempt[index] in self.n_sets[i]:
                 self.n_sets[i].remove(self.previous_attempt[index])
 
     def yellowify(self, index):
@@ -51,7 +51,6 @@ class WordleSolverLogic:
         print("-------------N sets--------------")
         print(self.n_sets)
 
-
     def is_guess_correct(self):
         return self.result == "GGGGG"
 
@@ -60,18 +59,19 @@ class WordleSolverLogic:
             if char not in self.n_sets[i]:
                 return False
 
-        # fixme: In all non green places, all mustUse letters must be used with at least as much frequency as in
-        #  mustUse list
-        for char in self.must_use:
-            if char not in word:
-                return False
+        temp_must_use = self.must_use.copy()
+        for i, char in enumerate(self.result):
+            if char != 'G' and word[i] in temp_must_use:
+                temp_must_use.remove(word[i])
+        if len(temp_must_use) != 0:
+            return False
 
         return True
 
     def get_next_guess(self):
         # only first time
         if self.previous_attempt == "":
-            next_attempt = "STARE"  #self.sorted_list[0]
+            next_attempt = "STARE"  # self.sorted_list[0]
             self.previous_attempt = next_attempt
             # self.sorted_list_index = 1
             return next_attempt
