@@ -60,9 +60,9 @@ class WordleSolverLogic:
 
     def get_next_guess(self):
         if self.previous_attempt == "":
-            next_attempt = self.sorted_list[0]
+            next_attempt = "STARE"  #self.sorted_list[0]
             self.previous_attempt = next_attempt
-            self.sorted_list_index = 1
+            # self.sorted_list_index = 1
             return next_attempt
 
         while self.sorted_list_index < len(self.sorted_list):

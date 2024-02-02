@@ -13,6 +13,7 @@ class WordleSolverBot:
         self.clear_cookies = clear_cookies
         self.chance = 1
         self.driver = self.setup_driver()
+        self.initialize_driver()
         self.main_element = self.get_main_element()
         self.wordle_rows = self.get_game_board_rows()
         self.word_length = word_length
@@ -22,15 +23,17 @@ class WordleSolverBot:
         options = Options()
         options.add_argument("-profile")
         options.add_argument(self.profile_dir)
+
         return webdriver.Firefox(options=options)
 
-    def get_main_element(self):
+    def initialize_driver(self):
         self.driver.get(self.url)
         self.driver.implicitly_wait(30)
 
         if self.clear_cookies:
             self.driver.delete_all_cookies()
 
+    def get_main_element(self):
         return self.driver.find_element("xpath", "//body[@class='nightmode']")
 
     def get_game_board_rows(self):
@@ -85,5 +88,5 @@ class WordleSolverBot:
 
         self.chance += 1
 
-        time.sleep(4.5)
+        time.sleep(3)
         return result
