@@ -4,14 +4,16 @@ from data_loader import WordDataset
 
 
 def main(wait):
-    bot = WordleSolverBot()
+    bot = WordleSolverBot(clear_cookies=True)
     words = WordDataset().words
-    solver = WordleSolverLogic(word_list=words)
 
     # Main game loop
     try:
         while True:
             input("[*] Press Enter to start...")
+            bot.reset()
+            solver = WordleSolverLogic(word_list=words)
+
             while bot.chance <= bot.max_chances:
                 word_to_guess = solver.get_next_guess()
                 result = bot.input_guess_word(word_to_guess)
@@ -29,9 +31,6 @@ def main(wait):
 
             if not solver.is_guess_correct:
                 print("[-] Failed to solve, max chances reached :(")
-
-            input("[*] Press Enter to reset state...")
-            bot.reset()
 
     except KeyboardInterrupt:
         print("[+] Received Ctrl+C event, stopping")

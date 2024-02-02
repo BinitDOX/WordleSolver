@@ -6,10 +6,11 @@ from selenium.webdriver.firefox.options import Options
 
 
 class WordleSolverBot:
-    def __init__(self, url="https://wordleunlimited.org/",
+    def __init__(self, url="https://wordleunlimited.org/", clear_cookies=True,
                  word_length=5, max_chances=6, profile_dir="/Users/bits/Desktop/Wordle/firefox_profile"):
         self.url = url
         self.profile_dir = profile_dir
+        self.clear_cookies = clear_cookies
         self.chance = 1
         self.driver = self.setup_driver()
         self.main_element = self.get_main_element()
@@ -26,6 +27,9 @@ class WordleSolverBot:
     def get_main_element(self):
         self.driver.get(self.url)
         self.driver.implicitly_wait(30)
+
+        if self.clear_cookies:
+            self.driver.delete_all_cookies()
 
         return self.driver.find_element("xpath", "//body[@class='nightmode']")
 
