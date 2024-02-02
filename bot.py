@@ -40,10 +40,11 @@ class WordleSolverBot:
 
     def reset(self):
         self.chance = 1
+
         self.main_element = self.get_main_element()
         self.wordle_rows = self.get_game_board_rows()
 
-    def guess_word(self, word):
+    def input_guess_word(self, word):
         if self.chance > self.max_chances:
             raise RuntimeError("Max tries exceeded, please call reset")
 
@@ -52,6 +53,12 @@ class WordleSolverBot:
 
         current_row = self.wordle_rows[self.chance - 1]
         self.main_element.send_keys(word)
+
+        row_letters = current_row.get_attribute('letters')
+        if row_letters.upper() != word.upper():
+            self.main_element.send_keys(Keys.BACKSPACE * self.word_length)
+            raise RuntimeError(f"Input out of sync: Input=[{row_letters.upper()}] Guess=[{word.upper()}]")
+
         self.main_element.send_keys(Keys.ENTER)
 
         if current_row.get_attribute('invalid') == '':
@@ -68,11 +75,11 @@ class WordleSolverBot:
             reveal = tile.get_attribute('reveal')
 
             if letter.upper() != g_letter.upper():
-                raise RuntimeError(f"Input out of sync: input={letter.upper()}, guess={g_letter.upper()}")
+                raise RuntimeError(f"Input out of sync: Input=[{letter.upper()}] Guess=[{g_letter.upper()}]")
 
             result += 'G' if evaluation == 'correct' else 'Y' if evaluation == 'present' else 'B'
 
         self.chance += 1
 
-        time.sleep(3)
+        time.sleep(4.5)
         return result

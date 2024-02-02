@@ -11,7 +11,7 @@ class WordDataset:
             word_frequency_data = json.load(file)
 
         return {
-            word: frequency
+            word.upper(): frequency
             for word, frequency in word_frequency_data.items()
             if len(word) == 5 and word.isalpha()
         }

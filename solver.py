@@ -1,19 +1,18 @@
 class WordleSolverLogic:
-    N = 5
-    n_sets = [set() for _ in range(N)]
-    sorted_list = []
-    must_use = []
-    result = ""
-    previous_attempt = ""
-    sorted_list_index = 0
 
-    def __init__(self, word_list, n=N):
+    def __init__(self, word_list, n=5):
         self.N = n
         self.n_sets = [set(chr(ord('A') + i) for i in range(26)) for _ in range(n)]
 
         self.sorted_list = sorted(word_list, key=lambda k: word_list[k], reverse=True)
 
-        print("sorted_list" + self.sorted_list[:5])
+        self.must_use = []
+        self.result = ""
+        self.previous_attempt = ""
+        self.sorted_list_index = 0
+
+        print("SORTED+LIST = ")
+        print(self.sorted_list)
 
     def greenify(self, index):
         self.n_sets[index] = {self.previous_attempt[index]}
@@ -35,7 +34,7 @@ class WordleSolverLogic:
         if self.result == "GGGGG":
             return self.previous_attempt
 
-        for i, char in self.result:
+        for i, char in enumerate(self.result):
             if char == 'B':
                 self.blackify(i)
             elif char == 'G':
@@ -51,7 +50,8 @@ class WordleSolverLogic:
             if char not in self.n_sets[i]:
                 return False
 
-        # fixme: In all non green places, all mustUse letters must be used with at least as much frequency as in mustUse list
+        # fixme: In all non green places, all mustUse letters must be used with at least as much frequency as in
+        #  mustUse list
         for char in self.must_use:
             if char not in word:
                 return False
@@ -73,4 +73,4 @@ class WordleSolverLogic:
                 self.previous_attempt = word
                 return word
 
-        return "E"+(self.N-1)*"H"
+        raise RuntimeError("Dictionary ended")
