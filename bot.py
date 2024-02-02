@@ -7,9 +7,9 @@ from selenium.webdriver.firefox.options import Options
 
 class WordleSolverBot:
     def __init__(self, url="https://wordleunlimited.org/", clear_cookies=True,
-                 word_length=5, max_chances=6, profile_dir="/Users/bits/Desktop/Wordle/firefox_profile"):
+                 word_length=5, max_chances=6):
         self.url = url
-        self.profile_dir = profile_dir
+        # self.profile_dir = profile_dir
         self.clear_cookies = clear_cookies
         self.chance = 1
         self.driver = self.setup_driver()
@@ -19,10 +19,10 @@ class WordleSolverBot:
         self.max_chances = max_chances
 
     def setup_driver(self):
-        options = Options()
-        options.add_argument("-profile")
-        options.add_argument(self.profile_dir)
-        return webdriver.Firefox(options=options)
+        # options = Options()
+        # options.add_argument("-profile")
+        # options.add_argument(self.profile_dir)
+        return webdriver.Firefox()
 
     def get_main_element(self):
         self.driver.get(self.url)

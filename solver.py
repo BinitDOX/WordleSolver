@@ -28,6 +28,9 @@ class WordleSolverLogic:
         self.must_use.append(self.previous_attempt[index])
 
     def process_result(self, result_string):
+        if result_string == "INVALID":
+            return
+
         self.must_use = []
         self.result = result_string
 
@@ -41,6 +44,13 @@ class WordleSolverLogic:
                 self.greenify(i)
             elif char == 'Y':
                 self.yellowify(i)
+
+        print("--------------------------")
+        print("-------------Must Use--------------")
+        print(self.must_use)
+        print("-------------N sets--------------")
+        print(self.n_sets)
+
 
     def is_guess_correct(self):
         return self.result == "GGGGG"
@@ -59,6 +69,7 @@ class WordleSolverLogic:
         return True
 
     def get_next_guess(self):
+        # only first time
         if self.previous_attempt == "":
             next_attempt = self.sorted_list[0]
             self.previous_attempt = next_attempt
