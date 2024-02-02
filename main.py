@@ -19,7 +19,6 @@ def main(wait):
                 result = bot.input_guess_word(word_to_guess)
                 solver.process_result(result)
 
-                # Print or log the result
                 print(f"[+] Attempt=[{bot.chance - 1}] Guessed=[{word_to_guess}] Result=[{result}]")
 
                 if solver.is_guess_correct():
