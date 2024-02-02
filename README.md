@@ -1,2 +1,2 @@
 # WordleSolver
-Wordle unlimited solver
+Wordle unlimited solver: https://wordleunlimited.org/
