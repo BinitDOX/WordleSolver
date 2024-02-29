@@ -25,13 +25,13 @@ class KSolver:
         return self.solver_instances[0]
 
     def get_most_likely_to_solve_instance(self):
-        min_total_possibilities = len(self.helper.sorted_list)
+        max_total_possibilities = 0
         instance_index = 0
         for index, val in enumerate(self.is_solved):
             if not val:
                 current_total_possibilities = self.solver_instances[index].get_total_qualifying_words()
-                if current_total_possibilities < min_total_possibilities:
-                    min_total_possibilities = current_total_possibilities
+                if current_total_possibilities > max_total_possibilities:
+                    max_total_possibilities = current_total_possibilities
                     instance_index = index
         print("GOING FOR THE INSTANCE: ")
         print(instance_index + 1)

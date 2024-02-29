@@ -49,5 +49,5 @@ def main(wait, slow):
 
 if __name__ == "__main__":
     WAIT_FOR_USER_INPUT = False
-    SLOW_DOWN = 0.25
+    SLOW_DOWN = 0.05
     main(WAIT_FOR_USER_INPUT, SLOW_DOWN)

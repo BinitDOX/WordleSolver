@@ -36,8 +36,8 @@ class KWordleSolverBot:
         result_string = ''.join([
             'B' if 'incorrect' in cell.get_attribute('aria-label')
             else 'Y' if 'different' in cell.get_attribute('aria-label')
-            else 'I' if 'invalid' in cell.get_attribute('aria-label')
-            else 'G'
+            else 'G' if 'correct' in cell.get_attribute('aria-label')
+            else 'I'
             for cell in cells
         ])
         return result_string
@@ -56,9 +56,10 @@ class KWordleSolverBot:
         self.main_element.send_keys(word)
         self.main_element.send_keys(Keys.ENTER)
 
+        time.sleep(0.2)
         result_strings = [self.get_result_string_for_board_row(board, self.chance) for board in range(1, self.game_boards+1)]
 
-        if result_strings[0][0] == 'I':
+        if all([rs == 'I'*self.word_length for rs in result_strings]):
             self.main_element.send_keys(Keys.BACKSPACE * self.word_length)
         else:
             self.chance += 1
