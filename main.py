@@ -1,6 +1,7 @@
 from bot import WordleSolverBot
 from solver import WordleSolverLogic
 from data_loader import WordDataset
+from solverhelper import WordleSolverHelper
 
 
 def main(wait):
@@ -12,12 +13,13 @@ def main(wait):
         while True:
             input("[*] Press Enter to start...")
             bot.reset()
-            solver = WordleSolverLogic(word_list=words)
+            helper = WordleSolverHelper(word_list=words)
+            solver = WordleSolverLogic(helper)
 
             while bot.chance <= bot.max_chances:
                 word_to_guess = solver.get_next_guess()
                 result = bot.input_guess_word(word_to_guess)
-                solver.process_result(result)
+                solver.process_result(result, word_to_guess)
 
                 print(f"[+] Attempt=[{bot.chance - 1}] Guessed=[{word_to_guess}] Result=[{result}]")
 

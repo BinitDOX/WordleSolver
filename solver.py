@@ -1,41 +1,63 @@
 class WordleSolverLogic:
 
-    def __init__(self, word_list, n=5):
+    def __init__(self, helper, n=5):
         self.N = n
         self.n_sets = [set(chr(ord('A') + i) for i in range(26)) for _ in range(n)]
-
-        self.sorted_list = sorted(word_list, key=lambda k: word_list[k], reverse=True)
-
         self.must_use = []
         self.result = ""
-        self.previous_attempt = ""
+        self.helper = helper
         self.sorted_list_index = 0
-
-        print("SORTED_LIST = ")
-        print(self.sorted_list)
+        self.is_guess_fixed = [False] * self.N
 
     def greenify(self, index):
-        self.n_sets[index] = {self.previous_attempt[index]}
+        self.n_sets[index] = {self.helper.previous_attempt[index]}
 
     def blackify(self, index):
-        for i in range(self.N):
-            if self.result[i] != 'G' and self.previous_attempt[index] in self.n_sets[i]:
-                self.n_sets[i].remove(self.previous_attempt[index])
+        def check_if_letter_all_black(letter):
+            return all(self.result[_i] == 'B' for _i, char in enumerate(self.helper.previous_attempt) if char == letter)
+
+        current_letter = self.helper.previous_attempt[index]
+        if check_if_letter_all_black(current_letter):
+            for i in range(self.N):
+                if current_letter in self.n_sets[i]:
+                    self.n_sets[i].remove(current_letter)
+        else:
+            # TODO: must not use this letter for more than number of yellows+green of that letter in complete word ever
+            if current_letter in self.n_sets[index]:
+                self.n_sets[index].remove(current_letter)
 
     def yellowify(self, index):
-        if self.previous_attempt[index] in self.n_sets[index]:
-            self.n_sets[index].remove(self.previous_attempt[index])
-        self.must_use.append(self.previous_attempt[index])
+        current_letter = self.helper.previous_attempt[index]
+        if current_letter in self.n_sets[index]:
+            self.n_sets[index].remove(current_letter)
 
-    def process_result(self, result_string):
+        def will_come_at_fixed_place(letter):
+            return any((self.is_guess_fixed_at_index(i)) and (letter in self.n_sets[i]) and
+                       (self.helper.previous_attempt[i] != letter) for i in range(self.N))
+        if not will_come_at_fixed_place(current_letter):
+            self.must_use.append(current_letter)
+
+    def process_result(self, result_string, guessed_word):
         if result_string == "INVALID":
             return
 
-        self.must_use = []
+        def is_letter_fixed_at_index(index):
+            return len(self.n_sets[index]) == 1
+
+        self.is_guess_fixed = list()
+        for i in range(self.N):
+            self.is_guess_fixed.append(is_letter_fixed_at_index(i))
+
+        if guessed_word != self.helper.previous_attempt:
+            self.helper.previous_attempt = guessed_word
+            if self.sorted_list_index != 0:
+                self.sorted_list_index -= 1
+
         self.result = result_string
 
-        if self.result == "GGGGG":
-            return self.previous_attempt
+        for i in range(self.N):
+            if self.helper.previous_attempt[i] in self.must_use:
+                self.must_use.remove(self.helper.previous_attempt[i])
 
         for i, char in enumerate(self.result):
             if char == 'B':
@@ -47,41 +69,44 @@ class WordleSolverLogic:
 
         print("--------------------------")
         print("-------------Must Use--------------")
-        print(self.must_use)
+        print(sorted(self.must_use))
         print("-------------N sets--------------")
-        print(self.n_sets)
+        for i in range(self.N):
+            print(sorted(self.n_sets[i]))
 
     def is_guess_correct(self):
-        return self.result == "GGGGG"
+        return self.result == "G" * self.N
 
-    def check_validity(self, word):
-        for i, char in enumerate(word):
-            if char not in self.n_sets[i]:
+    def is_guess_fixed_at_index(self, i):
+        return self.is_guess_fixed[i]
+
+    def get_next_guess(self, first_guess="STARE"):
+        def check_validity(possible_word):
+            for i, char in enumerate(possible_word):
+                if char not in self.n_sets[i]:
+                    return False
+
+            temp_must_use = self.must_use.copy()
+            for i in range(self.N):
+                if (not self.is_guess_fixed_at_index(i)) and possible_word[i] in temp_must_use:
+                    temp_must_use.remove(possible_word[i])
+            if len(temp_must_use) != 0:
                 return False
 
-        temp_must_use = self.must_use.copy()
-        for i, char in enumerate(self.result):
-            if char != 'G' and word[i] in temp_must_use:
-                temp_must_use.remove(word[i])
-        if len(temp_must_use) != 0:
-            return False
+            return True
 
-        return True
-
-    def get_next_guess(self):
         # only first time
-        if self.previous_attempt == "":
-            next_attempt = "STARE"  # self.sorted_list[0]
-            self.previous_attempt = next_attempt
-            # self.sorted_list_index = 1
+        if self.helper.previous_attempt == "":
+            next_attempt = first_guess
+            self.helper.previous_attempt = next_attempt
             return next_attempt
 
-        while self.sorted_list_index < len(self.sorted_list):
-            word = self.sorted_list[self.sorted_list_index]
+        while self.sorted_list_index < len(self.helper.sorted_list):
+            word = self.helper.sorted_list[self.sorted_list_index]
             self.sorted_list_index += 1
-
-            if self.check_validity(word):
-                self.previous_attempt = word
+            if check_validity(word):
+                self.helper.previous_attempt = word
                 return word
 
-        raise RuntimeError("Dictionary ended")
+        print("!!!!!!!!!!!!--------------- DICTIONARY ENDED ----------------!!!!!!!!!!!!")
+        return first_guess
