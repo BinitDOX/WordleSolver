@@ -8,8 +8,8 @@ class KSolver:
         self.N = n
         self.K = k
         self.is_solved = [False] * k
-        helper = WordleSolverHelper(word_list)
-        self.solver_instances = [WordleSolverLogic(helper, n) for _ in range(k)]
+        self.helper = WordleSolverHelper(word_list)
+        self.solver_instances = [WordleSolverLogic(self.helper, n) for _ in range(k)]
 
     def process_results(self, result_strings, guessed_word):
         for index, solver_instance in enumerate(self.solver_instances):
@@ -24,8 +24,21 @@ class KSolver:
                 return self.solver_instances[index]
         return self.solver_instances[0]
 
+    def get_most_likely_to_solve_instance(self):
+        min_total_possibilities = len(self.helper.sorted_list)
+        instance_index = 0
+        for index, val in enumerate(self.is_solved):
+            if not val:
+                current_total_possibilities = self.solver_instances[index].get_total_qualifying_words()
+                if current_total_possibilities < min_total_possibilities:
+                    min_total_possibilities = current_total_possibilities
+                    instance_index = index
+        print("GOING FOR THE INSTANCE: ")
+        print(instance_index + 1)
+        return self.solver_instances[instance_index]
+
     def get_next_guess(self, first_guess="STARE"):
-        return self.get_next_unsolved_instance().get_next_guess(first_guess)
+        return self.get_most_likely_to_solve_instance().get_next_guess(first_guess)
 
     def is_game_over(self):
         return all(self.is_solved)

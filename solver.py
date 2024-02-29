@@ -38,7 +38,7 @@ class WordleSolverLogic:
             self.must_use.append(current_letter)
 
     def process_result(self, result_string, guessed_word):
-        if result_string == "INVALID":
+        if "I" in result_string:
             return
 
         def is_letter_fixed_at_index(index):
@@ -80,21 +80,21 @@ class WordleSolverLogic:
     def is_guess_fixed_at_index(self, i):
         return self.is_guess_fixed[i]
 
-    def get_next_guess(self, first_guess="STARE"):
-        def check_validity(possible_word):
-            for i, char in enumerate(possible_word):
-                if char not in self.n_sets[i]:
-                    return False
-
-            temp_must_use = self.must_use.copy()
-            for i in range(self.N):
-                if (not self.is_guess_fixed_at_index(i)) and possible_word[i] in temp_must_use:
-                    temp_must_use.remove(possible_word[i])
-            if len(temp_must_use) != 0:
+    def check_validity(self, possible_word):
+        for i, char in enumerate(possible_word):
+            if char not in self.n_sets[i]:
                 return False
 
-            return True
+        temp_must_use = self.must_use.copy()
+        for i in range(self.N):
+            if (not self.is_guess_fixed_at_index(i)) and possible_word[i] in temp_must_use:
+                temp_must_use.remove(possible_word[i])
+        if len(temp_must_use) != 0:
+            return False
 
+        return True
+
+    def get_next_guess(self, first_guess="STARE"):
         # only first time
         if self.helper.previous_attempt == "":
             next_attempt = first_guess
@@ -104,9 +104,18 @@ class WordleSolverLogic:
         while self.sorted_list_index < len(self.helper.sorted_list):
             word = self.helper.sorted_list[self.sorted_list_index]
             self.sorted_list_index += 1
-            if check_validity(word):
+            if self.check_validity(word):
                 self.helper.previous_attempt = word
                 return word
 
         print("!!!!!!!!!!!!--------------- DICTIONARY ENDED ----------------!!!!!!!!!!!!")
         return first_guess
+
+    def get_total_qualifying_words(self):
+        current_index = self.sorted_list_index
+        total_qualifying_words = 0
+        while current_index < len(self.helper.sorted_list):
+            if self.check_validity(self.helper.sorted_list[current_index]):
+                total_qualifying_words += 1
+            current_index += 1
+        return total_qualifying_words
