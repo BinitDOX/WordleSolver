@@ -19,7 +19,6 @@ def main(wait, slow):
             input("[*] Press Enter to start...")
             kbot.reset()
             ksolver = KSolver(word_list=words, n=n_final, k=k_final)
-            time.sleep(1)
 
             while kbot.chance <= kbot.max_chances:
                 word_to_guess = ksolver.get_next_guess()

@@ -2,12 +2,15 @@ import time
 
 from selenium import webdriver
 from selenium.webdriver import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class KWordleSolverBot:
     def __init__(self, url="https://www.merriam-webster.com/games/quordle/#/practice", max_chances=9,
-                 word_length=5, game_boards=4, profile_dir='./firefox_profile'):
+                 word_length=5, game_boards=4, profile_dir='firefox_data'):
         self.url = url
         self.game_boards = game_boards
         self.chance = 1
@@ -26,7 +29,7 @@ class KWordleSolverBot:
 
     def initialize_driver(self):
         self.driver.get(self.url)
-        self.driver.implicitly_wait(30)
+        self.driver.implicitly_wait(2)
 
     def get_main_element(self):
         return self.driver.find_element("xpath", "//body")
@@ -44,6 +47,10 @@ class KWordleSolverBot:
 
     def reset(self):
         self.chance = 1
+        try:
+            WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='New Practice Game']"))).click()
+        except: pass
+        else:time.sleep(3)
         self.main_element = self.get_main_element()
 
     def input_guess_word(self, word):
